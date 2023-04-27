@@ -52,10 +52,16 @@ public class PauseMenu : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    public async void MainMenu() {
+    public void MainMenu() {
         Resume();
-        await levelLoader.LoadLevelWithName("MainMenu");
-        //SceneManager.LoadScene("MainMenu");
+        //await levelLoader.LoadLevelWithName("MainMenu");
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    public void OpenSecretLevel() {
+        GameManager.instance.SetTimeScale(1f);
+        //await levelLoader.LoadLevelWithName("Level-Secret");
+        SceneManager.LoadScene("Level-Secret");
     }
 
     public void Settings() {

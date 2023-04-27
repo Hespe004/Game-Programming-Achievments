@@ -8,9 +8,11 @@ using TMPro;
 
 public class SettingsMenu : MonoBehaviour
 {
-    public GameObject settingsMenuUI;
-    public GameObject pauseMenuUI;
-    public AudioMixer audioMixer;
+    [SerializeField] private GameObject settingsMenuUI;
+    [SerializeField] private GameObject pauseMenuUI;
+    [SerializeField] private GameObject audioMenuUI;
+    [SerializeField] private GameObject keybindMenuUI;
+    [SerializeField] private AudioMixer audioMixer;
     
     //Resolution variables
     [SerializeField]
@@ -43,12 +45,6 @@ public class SettingsMenu : MonoBehaviour
 
     }
 
-    public void BackToPause()
-    {
-        settingsMenuUI.SetActive(false);
-        pauseMenuUI.SetActive(true);
-    }
-
     public void SetResolution(int resolutionIndex) {
         //resoltuionIndex gives a number of which item of the choices it is
         // 1080 = 0, 3440 = 1, etc
@@ -60,5 +56,18 @@ public class SettingsMenu : MonoBehaviour
     public void SetFullscreen(bool isFullscreen) {
         Debug.Log(isFullscreen);
         Screen.fullScreen = isFullscreen;
+    }
+
+    public void BackToPause()
+    {
+        settingsMenuUI.SetActive(false);
+        pauseMenuUI.SetActive(true);
+    }
+
+    public void BackToSettings()
+    {
+        keybindMenuUI.SetActive(false);
+        audioMenuUI.SetActive(false);
+        settingsMenuUI.SetActive(true);
     }
 }

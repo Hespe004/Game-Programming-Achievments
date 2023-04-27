@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class BoxController : MonoBehaviour
 {
@@ -14,15 +15,19 @@ public class BoxController : MonoBehaviour
     private GameObject respawn;
     [SerializeField] private AudioClip _landSoundClip;
 
+    // Input
+    private PlayerInput playerInput;
+
     void Start()
     {
         respawn = GameObject.FindWithTag("Respawn");
         rb = GetComponent<Rigidbody>();
         gameManager = GameObject.FindObjectOfType<GameManager>();
+        playerInput = GetComponent<PlayerInput>();
     }
 
     void Update() {
-        if (Input.GetKeyDown(KeyCode.Space)) {
+        if (playerInput.actions["Drop"].triggered) {
             dropKeyPressed = true;
         }
     }
@@ -32,8 +37,9 @@ public class BoxController : MonoBehaviour
         if (!isLanded)
         {
             // Move the box left and right
-            float horizontalInput = Input.GetAxis("Horizontal");
-            transform.position += new Vector3(horizontalInput * moveSpeed * Time.deltaTime, 0, 0);
+            Vector2 horizontalInput = playerInput.actions["Move"].ReadValue<Vector2>();
+            Vector3 movement = new Vector3(horizontalInput.x, 0, horizontalInput.y) * moveSpeed * Time.deltaTime;
+            transform.position += movement;
 
             // Move the box down
             if (dropKeyPressed) {
@@ -47,6 +53,9 @@ public class BoxController : MonoBehaviour
     {
         if (collision.gameObject.tag == "Box" || collision.gameObject.tag == "Table")
         {
+            // Play sound
+            SoundFXManager.instance.PlaySoundFXClip(_landSoundClip, transform, 1f);
+
             isLanded = true;
             if (respawn.transform.position.y - rb.transform.position.y <= 4) {
                 respawn.transform.Translate(0, 1f, 0);
@@ -54,9 +63,6 @@ public class BoxController : MonoBehaviour
             else if (respawn.transform.position.y - rb.transform.position.y >= 6) {
                 respawn.transform.Translate(0, 0.2f, 0);
             }
-
-            // Play sound
-            SoundFXManager.instance.PlaySoundFXClip(_landSoundClip, transform, 1f);
 
             // Set the box's position to be aligned with the stack
             float yPos = Mathf.Round(transform.position.y * 2) / 2f;

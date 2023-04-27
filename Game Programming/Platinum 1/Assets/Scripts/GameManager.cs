@@ -1,17 +1,28 @@
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
+using TMPro;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager instance;
+
+    private void Awake() {
+        if (instance == null) {
+            instance = this;
+        }
+    }
+
     [SerializeField] private List<GameObject> boxPrefabs;
     [SerializeField] private GameObject currentBox;
     [SerializeField] private bool isDroppingBox = false;
+    [SerializeField] private TextMeshProUGUI highScoreText;
     
     public List<GameObject> allDroppedBoxes = new List<GameObject>();
     private GameObject respawn;
     private bool allowNewBox;
+    private float currentScore = 0;
 
     [SerializeField] private float timeScale = 1f;
 
@@ -28,8 +39,10 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // ResetHighScore();
         respawn = GameObject.FindWithTag("Respawn");
         SpawnNewBox();
+        UpdateHighScoretext();
     }
 
     // Update is called once per frame
@@ -60,7 +73,27 @@ public class GameManager : MonoBehaviour
 
     public void BoxLanded()
     {
+        currentScore++;
+        CheckHighScore();
         isDroppingBox = false;
         currentBox = null;
+    }
+
+    public void CheckHighScore() {
+        if (currentScore > PlayerPrefs.GetFloat("HighScore", 0))
+        {
+            PlayerPrefs.SetFloat("HighScore", currentScore);
+            if (highScoreText!=null) {
+                UpdateHighScoretext();
+            }
+        }
+    }
+
+    public void UpdateHighScoretext() {
+        highScoreText.text = $"HighScore: {PlayerPrefs.GetFloat("HighScore", 0)}";
+    }
+
+    public void ResetHighScore() {
+        PlayerPrefs.SetFloat("HighScore", 0);
     }
 }
